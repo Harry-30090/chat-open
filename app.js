@@ -30,12 +30,6 @@ const messagesRef = db.collection("messages");
 // Initialize Messaging
 const messaging = firebase.messaging();
 
-// Initialize Messaging
-const messaging = firebase.messaging();
-
-// Initialize Messaging
-const messaging = firebase.messaging();
-
 async function requestPermission() {
   try {
     // Register the service worker manually
@@ -138,6 +132,7 @@ const input = document.getElementById("message");
     }
   }
 );
+
 
 
 
