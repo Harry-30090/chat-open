@@ -46,7 +46,7 @@ async function requestPermission() {
 
     // Get FCM token (pass SW registration here)
     const token = await messaging.getToken({
-      vapidKey: "YOUR_VAPID_KEY_HERE",
+      vapidKey: "BF_xHDTe14X2srYfx7j1MLLCykJOftFmUQplrvYm3wPnurq4CiwMUnI_FondyjLPtXN-UkrVFvktz8eAzFP2rMw",
       serviceWorkerRegistration: registration
     });
     console.log("FCM Token:", token);
@@ -132,6 +132,7 @@ const input = document.getElementById("message");
     }
   }
 );
+
 
 
 
