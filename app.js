@@ -30,14 +30,16 @@ const messagesRef = db.collection("messages");
 // Initialize Messaging
 const messaging = firebase.messaging();
 
+// Initialize Messaging
+const messaging = firebase.messaging();
+
 async function requestPermission() {
   try {
-    // 1️⃣ Register SW manually (because project is in a subfolder)
-    const registration = await navigator.serviceWorker.register("/chat-open/firebase-messaging-sw.js");
+    // Register the service worker manually
+    const registration = await navigator.serviceWorker.register("/PROJECT_NAME/firebase-messaging-sw.js");
     console.log("Service Worker registered:", registration);
-    messaging.useServiceWorker(registration);
 
-    // 2️⃣ Request notification permission
+    // Request permission
     const status = await Notification.requestPermission();
     if (status !== "granted") {
       console.log("Permission denied.");
@@ -45,13 +47,14 @@ async function requestPermission() {
     }
     console.log("Notification permission granted.");
 
-    // 3️⃣ Get FCM token
+    // Get FCM token, passing the SW registration
     const token = await messaging.getToken({
-      vapidKey: "YOUR_VAPID_KEY_HERE"
+      vapidKey: "YOUR_VAPID_KEY_HERE",
+      serviceWorkerRegistration: registration
     });
     console.log("FCM Token:", token);
 
-    // 4️⃣ Save token in Firestore
+    // Save token in Firestore
     await firebase.firestore().collection("fcmTokens").doc(token).set({ token });
 
   } catch (err) {
@@ -60,6 +63,7 @@ async function requestPermission() {
 }
 
 requestPermission();
+
 
 
 async function sendPushToAll(title, body) {
@@ -130,4 +134,5 @@ const input = document.getElementById("message");
     }
   }
 );
+
 
