@@ -27,26 +27,38 @@ const messagesRef = db.collection("messages");
 
 
 // Request notification permission and get token
+// Initialize Messaging
 const messaging = firebase.messaging();
+
 async function requestPermission() {
   try {
-    const status = await Notification.requestPermission();
-    if (status === "granted") {
-      console.log("Notification permission granted.");
-      const token = await messaging.getToken({
-        vapidKey: "BF_xHDTe14X2srYfx7j1MLLCykJOftFmUQplrvYm3wPnurq4CiwMUnI_FondyjLPtXN-UkrVFvktz8eAzFP2rMw"
-      });
-      console.log("FCM Token:", token);
+    // 1️⃣ Register SW manually (because project is in a subfolder)
+    const registration = await navigator.serviceWorker.register("/chat-open/firebase-messaging-sw.js");
+    console.log("Service Worker registered:", registration);
+    messaging.useServiceWorker(registration);
 
-      // Save this token to Firestore
-      await firebase.firestore().collection("fcmTokens").doc(token).set({ token });
-    } else {
+    // 2️⃣ Request notification permission
+    const status = await Notification.requestPermission();
+    if (status !== "granted") {
       console.log("Permission denied.");
+      return;
     }
+    console.log("Notification permission granted.");
+
+    // 3️⃣ Get FCM token
+    const token = await messaging.getToken({
+      vapidKey: "YOUR_VAPID_KEY_HERE"
+    });
+    console.log("FCM Token:", token);
+
+    // 4️⃣ Save token in Firestore
+    await firebase.firestore().collection("fcmTokens").doc(token).set({ token });
+
   } catch (err) {
     console.error("Error getting permission or token", err);
   }
 }
+
 requestPermission();
 
 
@@ -118,3 +130,4 @@ const input = document.getElementById("message");
     }
   }
 );
+
