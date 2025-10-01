@@ -33,7 +33,7 @@ const messaging = firebase.messaging();
 async function requestPermission() {
   try {
     // Register the service worker manually
-    const registration = await navigator.serviceWorker.register("/PROJECT_NAME/firebase-messaging-sw.js");
+    const registration = await navigator.serviceWorker.register("/chat-open/firebase-messaging-sw.js");
     console.log("Service Worker registered:", registration);
 
     // Request notification permission
@@ -132,6 +132,7 @@ const input = document.getElementById("message");
     }
   }
 );
+
 
 
 
