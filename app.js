@@ -33,13 +33,16 @@ const messaging = firebase.messaging();
 // Initialize Messaging
 const messaging = firebase.messaging();
 
+// Initialize Messaging
+const messaging = firebase.messaging();
+
 async function requestPermission() {
   try {
     // Register the service worker manually
     const registration = await navigator.serviceWorker.register("/PROJECT_NAME/firebase-messaging-sw.js");
     console.log("Service Worker registered:", registration);
 
-    // Request permission
+    // Request notification permission
     const status = await Notification.requestPermission();
     if (status !== "granted") {
       console.log("Permission denied.");
@@ -47,7 +50,7 @@ async function requestPermission() {
     }
     console.log("Notification permission granted.");
 
-    // Get FCM token, passing the SW registration
+    // Get FCM token (pass SW registration here)
     const token = await messaging.getToken({
       vapidKey: "YOUR_VAPID_KEY_HERE",
       serviceWorkerRegistration: registration
@@ -63,6 +66,7 @@ async function requestPermission() {
 }
 
 requestPermission();
+
 
 
 
@@ -134,5 +138,6 @@ const input = document.getElementById("message");
     }
   }
 );
+
 
 
