@@ -1,0 +1,21 @@
+{
+  "name": "クラス",
+  "short_name": "クラス",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#00141a",
+  "theme_color": "#39c6d6",
+  "description": "心を静める場所 — クラス",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
