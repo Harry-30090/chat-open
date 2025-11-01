@@ -14,7 +14,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // ✅ 3. PWA Cache Settings
-const CACHE_NAME = "chat-cache-v2";
+const CACHE_NAME = "chat-cache-v2.1";
 const OFFLINE_URLS = [
   "/chat-open/",
   "/chat-open/index.html",
@@ -33,15 +33,23 @@ self.addEventListener("install", (event) => {
 });
 
 // Activate (clean up old caches)
-self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating and cleaning old caches...");
+self.addEventListener("activate", event => {
+  const allowedCaches = [chat-cache-v2.1];
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    caches.keys().then(cacheNames =>
+      Promise.all(
+        cacheNames.map(cacheName => {
+          if (!allowedCaches.includes(cacheName)) {
+            console.log("[Service Worker] Deleting old cache:", cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      )
     )
   );
   self.clients.claim();
 });
+
 
 // Fetch handler for offline support
 self.addEventListener("fetch", (event) => {
@@ -55,3 +63,4 @@ self.addEventListener("fetch", (event) => {
   );
 
 });
+
