@@ -34,7 +34,7 @@ self.addEventListener("install", (event) => {
 
 // Activate (clean up old caches)
 self.addEventListener("activate", event => {
-  const allowedCaches = [chat-cache-v2.1];
+  const allowedCaches = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames =>
       Promise.all(
@@ -63,4 +63,5 @@ self.addEventListener("fetch", (event) => {
   );
 
 });
+
 
