@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>管理ページ</title>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: hsl(199 83% 2%);
+        color: hsl(195 100% 93%);
+        padding: 40px;
+      }
+      h1 {
+        color: hsl(193 64% 62%);
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid hsl(194 22% 27%);
+        padding: 8px 12px;
+      }
+      th {
+        background: hsl(194 30% 8%);
+      }
+      input,
+      select,
+      button {
+        margin: 5px;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid hsl(194 22% 27%);
+        background: hsl(195 53% 4%);
+        color: white;
+      }
+      button {
+        cursor: pointer;
+        background: hsl(193 64% 62%);
+        border: none;
+        font-weight: bold;
+      }
+      button:hover {
+        background: hsl(193 64% 55%);
+      }
+      .banned {
+        color: hsl(9 70% 70%);
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>管理ページ - Ban管理</h1>
+
+    <div>
+      <h3>ユーザーBan設定</h3>
+      <input type="text" id="uid" placeholder="ユーザーUID" />
+      <input type="text" id="reason" placeholder="理由" />
+
+      <!-- ⏰ New: custom date-time input -->
+      <label>終了日時（オプション）:</label>
+      <input type="datetime-local" id="customDate" />
+
+      <!-- ⏳ Quick presets -->
+      <select id="duration">
+        <option value="none">手動指定のみ</option>
+        <option value="1d">1日</option>
+        <option value="7d">7日</option>
+        <option value="30d">30日</option>
+      </select>
+
+      <button id="banBtn">Banする</button>
+      <button id="unbanBtn">解除する</button>
+      <p id="status"></p>
+    </div>
+
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>UID</th>
+          <th>ユーザー名</th>
+          <th>状態</th>
+          <th>理由</th>
+          <th>期限</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <h2>💬 メッセージ管理</h2>
+    <div id="messages">読み込み中...</div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
