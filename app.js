@@ -19,7 +19,9 @@ const messaging = firebase.messaging();
 async function requestPermission() {
   try {
     // Register service worker
-    const registration = await navigator.serviceWorker.register("/chat-open/firebase-messaging-sw.js");
+    const registration = await navigator.serviceWorker.register(
+      "/chat-open/firebase-messaging-sw.js"
+    );
     console.log("Service Worker registered:", registration);
 
     // ✅ Wait for service worker to be ready (active state)
@@ -34,7 +36,8 @@ async function requestPermission() {
     console.log("Notification permission granted.");
 
     const token = await messaging.getToken({
-      vapidKey: "BF_xHDTe14X2srYfx7j1MLLCykJOftFmUQplrvYm3wPnurq4CiwMUnI_FondyjLPtXN-UkrVFvktz8eAzFP2rMw",
+      vapidKey:
+        "BF_xHDTe14X2srYfx7j1MLLCykJOftFmUQplrvYm3wPnurq4CiwMUnI_FondyjLPtXN-UkrVFvktz8eAzFP2rMw",
       serviceWorkerRegistration: registration,
     });
 
@@ -50,14 +53,36 @@ async function requestPermission() {
     await db.collection("fcmTokens").doc(user.uid).set({
       uid: user.uid,
       token,
+      notifications_enabled: false,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
     console.log("✅ Token saved for user:", user.uid, token);
-
   } catch (err) {
     console.error("Error getting permission or token", err);
   }
+}
+
+// 🔔 通知オンオフトグル
+async function setupNotificationToggle() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const ref = db.collection("fcmTokens").doc(user.uid);
+  const snap = await ref.get();
+  const current = snap.exists
+    ? snap.data().notifications_enabled !== false
+    : true;
+
+  const button = document.getElementById("toggleNotify");
+  button.textContent = current ? "通知をオフにする" : "通知をオンにする";
+
+  button.onclick = async () => {
+    const newState = !current;
+    await ref.update({ notifications_enabled: newState });
+    button.textContent = newState ? "通知をオフにする" : "通知をオンにする";
+    alert(`通知を${newState ? "オン" : "オフ"}にしました`);
+  };
 }
 
 auth.onAuthStateChanged(async (user) => {
@@ -78,6 +103,8 @@ auth.onAuthStateChanged(async (user) => {
 
   // ✅ Request notification permission after login
   requestPermission();
+
+  setupNotificationToggle(); // ← ここを追加
 });
 
 document.getElementById("logoutButton").onclick = () => {
@@ -100,7 +127,7 @@ async function sendPushToAll(title, body) {
   const tokensSnapshot = await db.collection("fcmTokens").get();
 
   const promises = tokensSnapshot.docs
-    .filter(doc => doc.id !== user.uid) // skip yourself
+    .filter((doc) => doc.id !== user.uid) // skip yourself
     .map(async (doc) => {
       const data = doc.data();
       const token = data.token;
@@ -108,12 +135,15 @@ async function sendPushToAll(title, body) {
       if (!token) return;
       console.log("📨 Sending push to:", doc.id, token);
 
-      const response = await fetch("https://open-chat.harry390plays2.workers.dev/", {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, title, body }),
-      });
+      const response = await fetch(
+        "https://open-chat.harry390plays2.workers.dev/",
+        {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, uid: doc.id, title, body }),
+        }
+      );
 
       if (!response.ok) {
         console.warn("⚠️ Failed to send push:", await response.text());
