@@ -14,7 +14,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // ✅ 3. PWA Cache Settings
-const CACHE_NAME = "chat-cache-v2.2";
+const CACHE_NAME = "chat-cache-v2.1.1";
 const OFFLINE_URLS = [
   "/chat-open/",
   "/chat-open/index.html",
@@ -63,6 +63,7 @@ self.addEventListener("fetch", (event) => {
   );
 
 });
+
 
 
 
