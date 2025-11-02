@@ -70,19 +70,30 @@ async function setupNotificationToggle() {
 
   const ref = db.collection("fcmTokens").doc(user.uid);
   const snap = await ref.get();
-  const current = snap.exists
-    ? snap.data().notifications_enabled !== false
-    : true;
+  let current = snap.exists
+    ? snap.data().notifications_enabled !== false // true or false
+    : false; // ← 新規はOFF扱い
 
   const button = document.getElementById("toggleNotify");
-  button.textContent = current ? "通知をオフにする" : "通知をオンにする";
+  updateButtonText();
 
   button.onclick = async () => {
-    const newState = !current;
-    await ref.update({ notifications_enabled: newState });
-    button.textContent = newState ? "通知をオフにする" : "通知をオンにする";
-    alert(`通知を${newState ? "オン" : "オフ"}にしました`);
+    // 状態をトグル
+    current = !current;
+
+    // Firestore更新
+    await ref.set(
+      { notifications_enabled: current },
+      { merge: true } // ← 他のフィールド(tokenなど)を上書きしない
+    );
+
+    updateButtonText();
+    alert(`通知を${current ? "オン" : "オフ"}にしました`);
   };
+
+  function updateButtonText() {
+    button.textContent = current ? "通知をオフにする" : "通知をオンにする";
+  }
 }
 
 auth.onAuthStateChanged(async (user) => {
@@ -104,7 +115,7 @@ auth.onAuthStateChanged(async (user) => {
   // ✅ Request notification permission after login
   requestPermission();
 
-  setupNotificationToggle(); // ← ここを追加
+  setupNotificationToggle();
 });
 
 document.getElementById("logoutButton").onclick = () => {
@@ -190,7 +201,7 @@ async function sendMessage() {
     document.getElementById("message").value = "";
 
     console.log("📨 Calling sendPushToAll() now...");
-    sendPushToAll("新しいブツが送信された", `${username}: ${text}`);
+    sendPushToAll("通知", `${username}: ${text}`);
   } catch (err) {
     console.error("メッセージ送信エラー:", err);
   }
